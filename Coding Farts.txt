@@ -16,3 +16,6 @@ all_exceptions = dir(locals()['__builtins__'])
 print(all_exceptions[index])
 
 Just learned that we can use isalpha() to check if strings contain all letters. interdasting.
+
+{printing} the local {dictionary} by {grabbing} and {joining} msg_ + msg_index (msg_10 or msg_11 or msg_12)
+print(locals().get("".join(("msg_", str(msg_index)))))  # a string to show in each iteration

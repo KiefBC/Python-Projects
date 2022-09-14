@@ -1,5 +1,4 @@
-# lets start our fun times right now
-# will try to remember to comment everything so you understand
+# write your code here
 msg_0 = "Enter an equation"
 msg_1 = "Do you even know what numbers are? Stay focused!"
 msg_2 = "Yes ... an interesting math operation. You've slept through all classes, haven't you?"
@@ -10,6 +9,7 @@ msg_5 = "Do you want to continue calculations? (y / n):"
 memory = 0  # just to declare it
 result = 0
 oper_list = ['+', '-', '*', '/']
+flag = False
 
 
 def is_one_digit(v):
@@ -48,12 +48,12 @@ while True:  # let's start the flow
     x, oper, y = calc[0], calc[1], calc[2]  # combining our split()
 
     # will use this if the user wants to continue calculations
-    if x == "M" or y == "M":  # checking memory
-        if x == "M":
+    if x == 'M' or y == 'M':  # checking memory
+        if x == 'M':
             x = memory
-        if y == "M":
+        if y == 'M':
             y = memory
-        elif y == "M":
+        elif y == 'M':
             y = memory
 
     if str(x).isalpha() or str(y).isalpha():  # isalpha() checks if the variables x,y are letters
@@ -76,7 +76,7 @@ while True:  # let's start the flow
         check(x, y, oper)
 
         # making sure you don't divide by zero and confirming oper placement
-        if oper == "+":
+        if oper == '+':
             result = (x + y)
         elif oper == '-':
             result = (x - y)
@@ -95,16 +95,54 @@ while True:  # let's start the flow
             print(msg_4)  # "Do you want to store the result? (y / n):"
             answer = input()  # read input
 
-            if answer == "n":
+            if answer == 'n':
                 break
-            else:
-                memory = result
-                break  # break out of this loop
+            elif answer == 'y':
+                # we will work from here to implement is_one_digit(result)
+                if is_one_digit(result):
+
+                    msg_index = 10
+                    msg_10 = "Are you sure? It is only one digit! (y / n)"
+                    msg_11 = "Don't be silly! It's just one number! Add to the memory? (y / n)"
+                    msg_12 = "Last chance! Do you really want to embarrass yourself? (y / n)"
+                    msg_ = ""
+
+                    # loop through our msg_10/11/12 until iterated through all of them
+                    # we do this because want to make sure the user understands
+                    while msg_index <= 12:
+
+                        print(locals().get("".join(("msg_", str(msg_index)))))
+                        answer = input()
+
+                        if answer == 'y':  # if yes then ->
+                            if msg_index < 12:
+                                msg_index += 1
+                                continue
+                            if msg_index == 12:
+                                flag = True
+                                memory = result
+                                break  # break this if cycle
+
+                        elif answer == 'n':
+                            if answer == 'n':
+                                flag = True
+                                break
+                            else:
+                                continue
+                        else:
+                            break
+                        memory = result
+
+                else:  # if function is false
+                    memory = result  # write in memory
+                    break  # next
+                if flag is True:  # a flag to out this cycle
+                    break  # next
 
         print(msg_5)  # Do you want to continue calculations? (y / n):
         answer = input()  # read answer
-        if answer == 'y' or answer == 'n':
+        if answer == 'y' or answer == 'n':  # yes or no accepted
             if answer == 'y':  # if yes, lets go back and restart
                 continue
-            else:  # okay goodbye, shut down the calc
+            else:
                 break
