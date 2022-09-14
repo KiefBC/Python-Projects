@@ -1,6 +1,16 @@
-Doing this code will allow us to catch any exception under the heigharchy and then print out {e} to show the exact
-error that occured. Simply incredible.
-
+Here is a tip for anyone reading this. This will make your life so much easier in the future with error handling.
 
 except Exception as e:
     print(f"The following error occurred : {e}")
+
+Enjoy. This will accept any Exception into {e} and will print out the exact exception into the string.
+Even though we didn't specify which one. Amazing. Simply amazing.
+
+    # Capture the input (e.g. 2) as an integer value
+index = int(input())
+
+# Get a list of all the exceptions returned from calling the builtin function
+all_exceptions = dir(locals()['__builtins__'])
+
+# Print the exception with the index provided as input
+print(all_exceptions[index])
