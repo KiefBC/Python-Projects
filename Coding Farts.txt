@@ -14,3 +14,5 @@ all_exceptions = dir(locals()['__builtins__'])
 
 # Print the exception with the index provided as input
 print(all_exceptions[index])
+
+Just learned that we can use isalpha() to check if strings contain all letters. interdasting.
