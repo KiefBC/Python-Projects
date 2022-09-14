@@ -1,0 +1,6 @@
+Doing this code will allow us to catch any exception under the heigharchy and then print out {e} to show the exact
+error that occured. Simply incredible.
+
+
+except Exception as e:
+    print(f"The following error occurred : {e}")
