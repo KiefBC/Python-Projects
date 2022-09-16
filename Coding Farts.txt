@@ -19,3 +19,16 @@ Just learned that we can use isalpha() to check if strings contain all letters. 
 
 {printing} the local {dictionary} by {grabbing} and {joining} msg_ + msg_index (msg_10 or msg_11 or msg_12)
 print(locals().get("".join(("msg_", str(msg_index)))))  # a string to show in each iteration
+
+# first {n} is the number of times we loop
+for i in range(0, n):
+    ele = int(input())
+    lst.append(ele)
+
+With % character, we could control the number of decimal places, for example, reduce their number to 3 or 2:
+print('%.3f' % (11/3))  # 3.667
+print('%.2f' % (11/3))  # 3.67
+print(f'%.{b}f' % (a))
+
+If you imagine a room where 3 is on the ceiling and 2 is on the floor. 2.5 would fit in the middle.
+Floor division means the “//“ will always take the floor or the lower number.
