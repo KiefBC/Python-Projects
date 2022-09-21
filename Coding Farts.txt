@@ -32,3 +32,29 @@ print(f'%.{b}f' % (a))
 
 If you imagine a room where 3 is on the ceiling and 2 is on the floor. 2.5 would fit in the middle.
 Floor division means the “//“ will always take the floor or the lower number.
+
+Find the most common repeated substring in a string:
+str = 'TheGoodSoldierSvejkTheOldManandtheSea'
+print([x for x in str if str.count(x) == max([str.count(_) for _ in str])])
+
+def clean_str():
+    global shit
+    garbage = ["\n", "-", ".", "'", " ", ","]
+    if any([_ in shit for _ in garbage]):
+        for trash in garbage:
+            if trash in shit:
+                shit = shit.replace(trash, "")
+
+shit = '''- Please, lighten your soul.
+
+- It happened by itself, Pastor. I had a friend. He betrayed me. I had a favorite. She recanted. I'm flying light.'''
+clean_str()
+print(shit)
+result = shit.lower().count('el') + shit.lower().count('le')
+print(result)
+
+# how to hide elements of a word using a random choice method on a list of strings
+hangman_word = random.choice(words)  # randomising our choice
+first_letters = hangman_word[0:3]  # selecting the first index up to the third index
+hidden_letters = ("-" * (len(hangman_word) - 3))  # replacing the last 3 words with ---
+obfuscate = first_letters + hidden_letters  # wooaaaah coding betty, wooooah
