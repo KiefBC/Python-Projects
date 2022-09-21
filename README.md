@@ -1,5 +1,3 @@
-# hyperskill_python_projects
-
 Just some coding projects I done did.
 
 Catch me on Hyperskill. I like to comment, leave hints (If I understand what I'm doing) and Links to help everyone else out.
