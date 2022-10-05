@@ -7,13 +7,15 @@ This type has two parameters: precision and scale.
     Scale is the count of digits to the right of the decimal point.
     Precision is the total count of digits in the number.
 
-The FLOAT data type is an approximate numeric data type used for floating-point numbers.
-The FLOAT data type has an optional parameter n that specifies the precision and storage size (from 1 to 53)
+--The FLOAT data type is an approximate numeric data type used for floating-point numbers.
+--The FLOAT data type has an optional parameter n that specifies the precision and storage size (from 1 to 53)
 
 VARCHAR(n)
+/*
     This type represents a string of symbols of varying lengths not longer than n
     For example, one can insert the strings apple, plum, and peach into a column with the type VARCHAR(5).
     The strings orange and banana will exceed the length restriction and the system will either truncate them or generate an error if one tries to insert such long values.
+*/
 
 BOOLEAN
     type represents boolean logic values: either TRUE or FALSE
