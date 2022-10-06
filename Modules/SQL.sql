@@ -342,25 +342,62 @@ CREATE TABLE employees (
     CHECK (age > 16)
 );
 
+DATE AND TIME IN SQL
 
+--The DATE type is used for storing a date that consists of a year, a month, and a day (without the time) in the 'YYYY-MM-DD' format
+--The TIME type stores hours, minutes, and seconds in the 'hh:mm:ss' format
+--The DATETIME type stores both date and time in the 'YYYY-MM-DD hh:mm:ss' format
+--The TIMESTAMP is another type used to store both date and time but in MySQL and its range is more narrow than DATETIME
+--The INTERVAL can use it to store the interval between two dates. There are two classes of the INTERVAL type: INTERVAL YEAR TO MONTH and INTERVAL DAY TO SECOND.
 
+To get the current date, we can use the CURDATE() or CURRENT_DATE() functions.
 
+SELECT CURDATE();
 
+Likewise, to get the current time, you can use CURRENT_TIME() or CURTIME() functions. To select the current time, we can use the following function:
 
+SELECT CURTIME();
 
+To select both date and time, apply CURRENT_TIMESTAMP() function:
 
+SELECT CURRENT_TIMESTAMP();
 
+If you want to get the difference between the two dates, you can use the DATEDIFF(first_date, second_date) function.
+In MySQL, you can also use the function TIMEDIFF(first_time, second_time) to get the difference between two TIME values.
 
+For example, the query below in MySQL will return 5 as the result:
 
+SELECT DATEDIFF('2020-05-15 09:34:34', '2020-05-10 15:34:43');
 
+To get a part of the date, you can use the EXTRACT(unit FROM date) function, which extracts a specified piece from a given date.
+The query below will extract the month from the given date and return 11 as the result:
 
+SELECT EXTRACT(MONTH FROM '2020-11-04');
 
+You can also add and subtract dates using DATE_ADD(date, INTERVAL value_of_interval units) and DATE_SUB(date, INTERVAL value_of_interval units) functions
+add ten days to the current date, using the DATE_ADD function:
 
+SELECT DATE_ADD(CURDATE(), INTERVAL 10 DAY);
 
+There is also a function called ADDDATE which has two forms: the first is similar to DATE_ADD and the second accepts only days as an argument:
+This query will return the date that will be in 10 days from today.
 
+SELECT ADDDATE(CURDATE(), 10);
 
+Let's subtract 2 years from the date '1996-11-30':
 
+SELECT DATE_SUB('1996-11-30', INTERVAL 2 YEAR);
 
+to convert dates from one time zone to another, you can use CONVERT_TZ (value, from_time_zone, to_time_zone)
+As a timezone, you can use both named time zones such as 'Europe/Helsinki' or 'UTC' or offsets in the inclusive range from '-12:59' to '+13:00'. You can also use the system time zone using keyword 'SYSTEM'
+
+For example, the query below will convert the given date and time from the 'UTC' time zone to the 'US/Eastern' timezone:
+
+SELECT CONVERT_TZ('2008-05-15 12:00:00','UTC','US/Eastern');
+
+You can also set the time zone per session using the following query:
+
+SET time_zone = timezone;
 
 
 
