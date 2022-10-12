@@ -40,3 +40,23 @@ full_name TEXT NOT NULL,
 gender TEXT NOT NULL,
 date_of_birth TEXT NOT NULL
 );"
+
+-- FILLING SOME OF OUR BOXES WITH INFORMATION
+-- COPYING DIRECTLY INTO ITSELF
+
+insert_book_table = "INSERT INTO book (book_name, isbn, genre, author, book_year, book_count, book_page, rank)
+SELECT book_name, isbn, genre, author, book_year, book_count, book_page, rank
+from book;"
+
+insert_staff_table = "INSERT INTO staff (full_name, gender, date_of_birth)
+SELECT full_name, gender, date_of_birth
+from staff;"
+
+insert_student_table = "INSERT INTO student (full_name, gender, date_of_birth)
+SELECT full_name, gender, date_of_birth
+from student;"
+
+insert_operation_table = "INSERT INTO operation (student_id, staff_id, book_id, iss_date, return_date, return_indicator)
+SELECT student_id, staff_id, book_id, iss_date, return_date, return_indicator
+from operation
+where return_indicator = 1;"

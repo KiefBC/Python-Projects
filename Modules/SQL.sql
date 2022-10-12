@@ -384,14 +384,14 @@ This query will return the date that will be in 10 days from today.
 
 SELECT ADDDATE(CURDATE(), 10);
 
-Let's subtract 2 years from the date '1996-11-30':
+Lets subtract 2 years from the date '1996-11-30':
 
 SELECT DATE_SUB('1996-11-30', INTERVAL 2 YEAR);
 
-to convert dates from one time zone to another, you can use CONVERT_TZ (value, from_time_zone, to_time_zone)
-As a timezone, you can use both named time zones such as 'Europe/Helsinki' or 'UTC' or offsets in the inclusive range from '-12:59' to '+13:00'. You can also use the system time zone using keyword 'SYSTEM'
-
-For example, the query below will convert the given date and time from the 'UTC' time zone to the 'US/Eastern' timezone:
+--to convert dates from one time zone to another, you can use CONVERT_TZ (value, from_time_zone, to_time_zone)
+--As a timezone, you can use both named time zones such as 'Europe/Helsinki' or 'UTC' or offsets in the inclusive range from '-12:59' to '+13:00'. You can also use the system time zone using keyword 'SYSTEM'
+--
+--For example, the query below will convert the given date and time from the 'UTC' time zone to the 'US/Eastern' timezone:
 
 SELECT CONVERT_TZ('2008-05-15 12:00:00','UTC','US/Eastern');
 
@@ -399,12 +399,159 @@ You can also set the time zone per session using the following query:
 
 SET time_zone = timezone;
 
+we can select specific attributes
+
+SELECT
+    day,
+    hour,
+    phenomena,
+    temperature AS "temperature in Celsius",
+    feels_like AS "feels like in Celsius",
+    wind_speed AS "wind speed in m/s"
+FROM
+    weather
+;
+
+SELECT
+    col1 [AS alias1], ..., colN [AS aliasN]
+FROM
+    table_name
+;
 
 
+we can also use expressions to select
+
+SELECT
+    'London' AS place,
+    day,
+    hour,
+    phenomena,
+    temperature*9/5+32 AS "temperature in Fahrenheit",
+    feels_like < temperature AS "feels colder",
+    wind_speed AS "wind speed in m/s"
+FROM
+    weather
+;
 
 
+SELECT
+    exp1 [AS alias1], ..., expN [AS aliasN]
+FROM
+    table_name
+;
+
+The selection of a subset of rows from a table is called filtering.
+
+SELECT *
+FROM table
+WHERE conditions
+
+--Let's imagine that your first client wants to buy a book by Charles Dickens. Let's write a query that selects books that meet the criteria:
+
+SELECT id, title, rating
+FROM books
+WHERE author = 'Charles Dickens';
+
+= 	equality check
+<, > 	less, greater
+<=, >= 	less or equal, greater or equal
+<>, != 	not equal
+
+--Let's say, we want to know which products in our table cost more than 250. This time we use the > operator. The query looks like this:
+
+SELECT *
+FROM products
+WHERE price > 250
+
+--This time, we want to select all products from the table that are related to the vegetables category. Our SQL query will look like this:
+
+SELECT *
+FROM products
+WHERE category = 'vegetables'
 
 
+--    NOT returns True if argument equals to False and vice versa.
+--    AND compares operands and returns True only if all of them are True. Alternatively, returns False.
+--    OR returns True if at least one of the operands is True. Otherwise, returns False.
+
+--In order to hire the right person for the project, we need a candidate to meet two requirements: be a Middle or a Senior and know SQL.
+--Our query should look like this:
+
+SELECT *
+FROM staff
+WHERE (status="Middle" OR status="Senior") AND skills="SQL"
+
+--We can arrange the same criteria selection by using the NOT operand instead of OR:
+
+SELECT *
+FROM staff
+WHERE NOT(status="Junior") AND skills="SQL"
+
+SELECT * FROM Customers
+WHERE Country NOT IN ('Germany', 'France', 'UK');
 
 
+DELETE FROM books
+
+DELETE FROM books
+WHERE quantity = 0
+
+DELETE FROM table_name
+WHERE logical_expression
+
+--Inserting selected rows
+
+INSERT INTO users (user, user_email, zip_code)
+SELECT * FROM customers;
+
+--Say we need to add only the information about Tomato Inc:
+
+INSERT INTO users
+SELECT
+    supplier,
+    supplier_email,
+    zip_code,
+    city
+FROM
+    suppliers
+WHERE
+    supplier = 'Tomato Inc';
+
+INSERT INTO table1 (column_1, column_2, ..., column_n)
+SELECT
+    column_1,
+    column_2,
+    ...,
+    column_n
+FROM
+    table2
+WHERE
+    condition;
+
+--What information is necessary for making an update? Name of a table where we want to change data, column name(s) where the data resides and an expression to calculate a new value for each specified column:
+
+UPDATE table_name
+SET col1 = expr1,
+    col2 = expr2,
+    …,
+    colN = expr;
+
+--If for some reason all workers need to be moved to department #14, we could write the following:
+
+UPDATE employees
+SET department_id = 14;
+
+--What if we want to celebrate such a massive change in the company's structure and give our employees a raise?
+--Absolute values won’t do here, so their current salaries should be used:
+
+UPDATE employees
+SET salary = salary + 10000;
+
+--Pay attention: during the execution of UPDATE, every row of a table is considered individually. If we want to use old value(s) to compute a new value for a cell, only cell(s) from the same row will be taken into account.
+
+--It’s possible to update multiple columns simultaneously, so we can achieve the same result using only one query instead of two:
+
+UPDATE employees
+SET department_id = 14,
+    salary = salary + 10000;
 
