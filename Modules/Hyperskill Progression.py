@@ -1201,7 +1201,7 @@ def mi_to_km(miles):
 '''
 Else statement → Spellchecker
 Code Challenge — Write a program
-Write a simple spellchecker that tells you if the word is spelled correctly. Use the dictionary in the code below!
+Write a simple spellchecker that tells you if the word is spelled correctly. Use the dictionary.py in the code below!
 The input format:
 A single line with the "word".
 The output format:
@@ -3368,7 +3368,7 @@ print(' '.join(indexes) or 'not found')
 
 '''
 Split and join → Spellchecker
-Write a spellchecker that tells you which words in the sentence are spelled incorrectly. Use the dictionary in the code below.
+Write a spellchecker that tells you which words in the sentence are spelled incorrectly. Use the dictionary.py in the code below.
 The input format:
 A sentence. All words are in the lowercase.
 The output format:
