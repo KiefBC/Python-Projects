@@ -4,10 +4,6 @@ Catch me on Hyperskill. I like to comment, leave hints (If I understand what I'm
 
 https://hyperskill.org/profile/312198178
 
-# Modules
-
-Simply just the descriptive notions of methods in Python. My plan is to eventually go through all of it and refactor all my programs I have made and improve them one way or another. I have already made 2 iterations on my Last Pencil. Took me forever.
-
 # Folder Projects
 
 I will keep projects to their own folders. Cleanliness is next to Godliness or whatever.
