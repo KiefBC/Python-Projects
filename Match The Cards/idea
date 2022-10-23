@@ -1,0 +1,11 @@
+Store Inventory
+
+    A class for items in the store
+    A class for the inventory
+    How can you add items to the inventory?
+    How can you update items in the inventory?
+    What about deleting items?
+
+    Dungeon Game
+
+        Using the grid-like we did in our memory game but instead of cards, one space holds a monster, and another the exit. Start your play in a spot on the grid and have them move around the grid one space at a time until they either find the exit and win or find the monster and lose.
