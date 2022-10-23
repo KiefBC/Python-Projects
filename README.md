@@ -6,11 +6,11 @@ I currently practice on LeetCode, CodeWars, Hyperskill, Team Treehouse and a few
 
 # My Accounts on Coding...
 
-https://hyperskill.org/profile/312198178
-https://www.codewars.com/users/KiefBC
-https://leetcode.com/kiefx/
-https://edabit.com/user/tZzBdaszpgkEFshNL
-https://py.checkio.org/user/kiefx/
+* https://hyperskill.org/profile/312198178
+* https://www.codewars.com/users/KiefBC
+* https://leetcode.com/kiefx/
+* https://edabit.com/user/tZzBdaszpgkEFshNL
+* https://py.checkio.org/user/kiefx/
 
 
 # Folder Projects
