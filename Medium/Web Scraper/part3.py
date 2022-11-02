@@ -9,7 +9,6 @@ class WebScraper:
         self.url = None
         self.response = None
         self.hello_input = None
-        self.request_dict = {}
 
     def get_request(self):
         self.url = f'{self.hello_input}'
