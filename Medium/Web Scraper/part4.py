@@ -30,7 +30,8 @@ class WebScraper:
     def get_request(self):
         self.url = 'https://www.nature.com/nature/articles?sort=PubDate&year=2020&page=3'
         self.response = requests.get(self.url, headers={'Accept-Language': 'en-US,en;q=0.5'})
-        # lets make sure we receive a 200 status_code
+
+        # let's make sure we receive a 200 status_code
         if self.response.status_code == 200:
             soup = BeautifulSoup(self.response.content, 'html.parser')
 
@@ -43,8 +44,17 @@ class WebScraper:
                     article_link = article.find("a", {"data-track-action": "view article"}).get("href")
                     complete_link = main_link + article_link
                     self.articles.append(complete_link)
+        return self.articles, self.url, self.response
 
-    def article_saving
+    def article_filename(self):
+        soup = BeautifulSoup(self.response.content, 'html.parser')
+        unchanged_title = soup.find("h1", {"class": "c-article-magazine-title"}).text
+        # creating a map of every char and removing any punctuation
+        mapped_title = unchanged_title.maketrans("", "", string.punctuation + "’")
+        # creating a string from our mapped object
+        article_filename = unchanged_title.translate(mapped_title)
+        article_filename = article_filename.strip().replace(" ", "_")
+        return article_filename
 
     def user_input(self):
         # self.hello_input = input('Input the URL: \n')
