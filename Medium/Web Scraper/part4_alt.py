@@ -20,7 +20,6 @@ def get_news_article_link(article_link):
     # now let's iterate through them all
     for article in all_articles:
         article_span = article.find("span", {"data-test": "article.type"})
-        # this can be News Feature, Futures, Book Review, etc
         article_type = article_span.find("span").text
         if article_type == "News":
             # start the creation of our article URL

@@ -29,13 +29,13 @@ class WebScraper:
 
     def get_request(self, url):
         # we speak English, not Spanish
-        return requests.get(url, headers={'Accept-Language': 'en-US,en;q=0.5'})
+        return requests.get(url, headers={'Accept-Language': 'en-US,en;q=0.5'}),
 
     def get_links(self, url):
         response = self.get_request(url)
         # let's make sure we receive a 200 status_code
         if response.status_code == 200:
-            soup = BeautifulSoup(response.content, 'html.parser')
+            soup = BeautifulSoup(self.response.content, 'html.parser')
             # this will select every article without prejudice and only the articles
             # CSS: all_articles = soup.find_all(class_="app-article-list-row__item")
             all_articles = soup.find_all("article")
@@ -46,7 +46,7 @@ class WebScraper:
                     complete_link = main_link + article_link
                     self.articles.append(complete_link)
 
-        return self.articles
+        return self.articles,
 
     def article_filename(self):
         soup = BeautifulSoup(self.response.content, 'html.parser')
@@ -85,3 +85,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
