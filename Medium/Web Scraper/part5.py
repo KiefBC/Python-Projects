@@ -10,9 +10,6 @@ def request_page(num_page, url):
     return r
 
 
-# res = request_page(2, 'https://www.nature.com/nature/articles')
-
-
 def clean_article_title(title):
     clean_title = title.strip().replace(' ', '_')
     for character in clean_title:
