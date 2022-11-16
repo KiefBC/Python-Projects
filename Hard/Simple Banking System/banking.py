@@ -11,6 +11,10 @@ class BankMachine:
         self.account_menu = ('1. Balance\n2. Log Out\n0. Exit')
 
     def menu(self):
+        """
+        The main menu everyone will see upon accessing our Simple Banking System
+        They have 3 choices. Create, Log in or Exit
+        """
         print(self.cards)
         print(self.pins)
         user_input = input(f'{self.main_menu}\n> ')
@@ -26,18 +30,30 @@ class BankMachine:
                 return
 
     def card_creation(self):
+        """
+        We create our user a new Card Number and PIN
+        We hope they keep it safe.
+        """
         card_creation = random.randint(999999999, 9999999999)
         ready_card = f'{self.iin}{card_creation}'
         self.cards.append(ready_card)
         return f'{self.iin}{card_creation}'
 
     def pin_creation(self):
+        """
+        This will be used to create the users PINS using a random number from 999 to 9999
+        PIN's should be 4 digits long at minimum
+        """
         pin_creation = random.randint(999, 9999)
         ready_pin = f'{pin_creation}'
         self.pins.append(ready_pin)
         return f'{ready_pin}'
 
     def account(self):
+        """
+        This is the basic User Account that the user will see once they have successfully logged in
+        after verifying themselves through check_creds()
+        """
         account_input = input(f'{self.account_menu}\n> ')
         match account_input:
             case '1':
@@ -50,6 +66,10 @@ class BankMachine:
                 return
 
     def check_creds(self):
+        """
+        This is the function for checking and verifying the credentials
+        We received from the user.
+        """
         print("")
         card_input = input('Enter your card number:\n> ')
         pin_input = input('Enter your PIN:\n> ')
