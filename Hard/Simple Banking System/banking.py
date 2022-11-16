@@ -1,4 +1,5 @@
 import random
+import sqlite3
 
 
 class BankMachine:
@@ -13,6 +14,25 @@ class BankMachine:
         self.pins = []
         self.main_menu = "1. Create an account\n2. Log into account\n0. Exit"
         self.account_menu = '1. Balance\n2. Log Out\n0. Exit'
+        self.conn = sqlite3.connect('card.s3db')
+        self.cur = self.conn.cursor()
+        self.cur.execute("""CREATE TABLE IF NOT EXISTS card (
+                                    id INTEGER,
+                                    number TEXT,
+                                    pin TEXT,
+                                    balance INTEGER DEFAULT 0
+                                    );""")
+        self.conn.commit()
+
+    def insert_into_db(self, user_id, card_number, pin_number, balance):
+        card_number = card_number
+        pin_number = pin_number
+        user_id = user_id
+        balance = balance
+        self.cur.execute('INSERT INTO card VALUES (?, ?, ?, ?)', (user_id, card_number, pin_number, balance))
+        self.conn.commit()
+        return
+
 
     def menu(self):
         """
@@ -23,8 +43,8 @@ class BankMachine:
         user_input = input(f'{self.main_menu}\n> ')
         match user_input:
             case '1':
-                print(f"Your card number:\n{self.card_creation()}")
-                print(f'Your card PIN:\n{self.pin_creation()}\n')
+                print("")
+                self.card_creation()
                 return self.menu()
             case '2':
                 self.check_creds()
@@ -35,7 +55,7 @@ class BankMachine:
     def card_creation(self):
         """
         We create our user a new Card Number and PIN
-        We utilize the Luhn Algorithm
+        We utilize the Luhn Algorithm and add to the DB
         We hope the Human Centipede keep it safe.
         :return:
         """
@@ -46,18 +66,17 @@ class BankMachine:
                 card_number = card_number + str(checksum)
                 break
         self.cards.append(card_number)
-        return card_number
 
-    def pin_creation(self):
-        """
-        This will be used to create the users PINS using a random number from 999 to 9999
-        PIN's should be 4 digits long at minimum
-        :return:
-        """
         pin_creation = ''.join([str(random.randint(0, 9)) for _ in range(4)])
-        ready_pin = f'{pin_creation}'
-        self.pins.append(ready_pin)
-        return f'{ready_pin}'
+        pin_number = f'{pin_creation}'
+        self.pins.append(pin_number)
+
+        user_balance = int(self.get_balance())
+
+        print(f'Your card number:\n{card_number}')
+        print(f'Your card PIN:\n{pin_number}\n')
+
+        return self.insert_into_db(card_creation, card_number, pin_number, user_balance)
 
     def account(self):
         """
@@ -65,10 +84,11 @@ class BankMachine:
         after verifying themselves through check_creds()
         :return:
         """
+        balance = 0
         account_input = input(f'{self.account_menu}\n> ')
         match account_input:
             case '1':
-                print('Balance: 0\n')
+                print(f'Balance: {self.get_balance()}\n')
                 return self.account()
             case '2':
                 print('You have successfully logged out!')
@@ -76,6 +96,10 @@ class BankMachine:
             case '0':
                 print('Bye!')
                 return
+
+    def get_balance(self):
+        balance = int(0)
+        return balance
 
     def luhn_algo(self, card_number):
         """
