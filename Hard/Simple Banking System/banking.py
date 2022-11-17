@@ -6,7 +6,7 @@ class BankMachine:
     """
     Just a simple Bank Machine program made in Python.
     Self-explanatory. User can Create an account, login to an account or View an account
-    Nothing is currently saved once the program ends.
+    All information is stored i na DB for future use after Program ends
     """
     def __init__(self):
         self.iin = '400000'
