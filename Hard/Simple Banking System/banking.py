@@ -16,7 +16,7 @@ def connect_db(db_file):
 def create_db():
     cursor = connection.cursor()
     cursor.execute('CREATE TABLE IF NOT EXISTS card('
-                   'id INTEGER primary key AUTOINCREMENT,'
+                   'id INTEGER PRIMARY KEY,'
                    'number TEXT,'
                    'pin TEXT,'
                    'balance INTEGER DEFAULT 0'
@@ -26,21 +26,14 @@ def create_db():
 
 def print_menu():
     if not logged_in:
-        print('1. Create an account')
-        print('2. Log into account')
-        print('0. Exit')
+        print("1. Create an account\n2. Log into account\n0. Exit")
         return int(input())
     else:
-        print('1. Balance')
-        print('2. Add income')
-        print('3. DO transfer')
-        print('4. Close account')
-        print('5. Log out')
-        print('0. Exit')
+        print('1. Balance\n2. Add income\n3. Do transfer\n4. Close account\n5. Log out\n0. Exit')
         return int(input())
 
 
-def get_checksum(_card):
+def luhhn_algo(_card):
     numbers = list(str(_card.number))
     numbers = [eval(i) for i in numbers]
     # Multiply odd digits by 2
@@ -78,7 +71,7 @@ def add_card(card):
 def create_account():
     card = Card(int('400000' + str(random.randint(100000000, 999999999))),
                 random.randint(1000, 9999))
-    get_checksum(card)
+    luhhn_algo(card)
     print('Your card has been created')
     print('Your card number:')
     print(card.number)
@@ -149,7 +142,7 @@ def do_transfer():
     print('Transfer\n Enter card number:')
     receiver = input()
     temp = Card(receiver, '9609')
-    if not get_checksum(temp):
+    if not luhhn_algo(temp):
         print('Probably you made a mistake in the card number.\n Please try again!')
         return
     elif not check_receiver(receiver):
