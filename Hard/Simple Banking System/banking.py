@@ -75,7 +75,6 @@ class BankMachine:
 
         # Print out our Confirmation of addition
         items = c.fetchall()
-        print(f'\nThis is our new account that we created: {items}\n')
 
         print("Your card has been created")
         print(f'Your card number:\n{card_number}')
@@ -130,7 +129,6 @@ class BankMachine:
             # End DB Connection
             conn.close()
             return
-
         else:
             new_balance = items[0] - trans_money
             c.execute("UPDATE card SET balance=? WHERE id=?", [new_balance, session_id])
@@ -194,7 +192,7 @@ class BankMachine:
             return False
 
     # VERIFYING - NOW WORKS FLAWLESSLY
-    def check_creds(self):
+    def check_creds(self, session_id=None):
         """
         This is the function for checking and verifying the credentials
         we received from the user as well as utilizing the Luhn Algo
@@ -209,15 +207,8 @@ class BankMachine:
         card_input = input('Enter your card number:\n> ')
         pin_input = input('Enter your PIN:\n> ')
 
-        # KEEP THIS FOR NOW
-        c.execute("SELECT * FROM card")
-        items = c.fetchall()
-        verify = [item for item in items]
-        print(f'This is our Verify list: {verify}')
-        # KEEP THIS FOR NOW
-
         if self.luhn_algo(card_input):
-            c.execute("SELECT * FROM card WHERE number=?", [card_input])
+            c.execute("SELECT * FROM card WHERE id=?", [session_id[0]])
             items = c.fetchall()
             if card_input in items[0][1] and pin_input in items[0][2]:
                 print('\nYou have successfully logged in!\n')
@@ -278,13 +269,12 @@ while x:
     match user_input:
         case '1':  # CREATE ACCOUNT
             print("")
-            conn.close()
-            unique_id = bank.card_creation()
-            session_ids.append(unique_id)
-            session_id = session_ids[-1]
-            print(f'This is our session_id: {session_id}')
+            # session_id = (bank.card_creation(),)
+            # session_ids.append(unique_id)
+            session_id = (bank.card_creation(),)
+            # session_id = session_ids[-1]
         case '2':  # LOG INTO ACCOUNT
-            if bank.check_creds():
+            if bank.check_creds(session_id):
                 while True:
                     account_input = input(
                         '1. Balance\n2. Add income\n3. Do transfer\n4. Close account\n5. Log out\n0. Exit\n> ')
@@ -303,20 +293,25 @@ while x:
 
                         case '3':  # TRANSFERING FUNDS CROSS-ACCOUNT
 
-                            c.execute("SELECT number FROM card")
-                            items = c.fetchall()
-                            print(items)
-                            print(f'These are our Verified Cards in the DB: {items}')
                             trans_card = input('Enter card number:\n> ')
+                            if_exists = c.execute("SELECT EXISTS(SELECT number FROM card WHERE number=?)", (trans_card,))
+                            fetched = if_exists.fetchone()[0]
+
                             if bank.luhn_algo(trans_card):
-                                if trans_card == items[0][0]:
-                                    print("\nYou can't transfer money to the same account!\n")
-                                    continue
+                                if fetched == 1:
+                                    c.execute("SELECT number FROM card")
+                                    items = c.fetchall()
+                                    if trans_card == items[0][0]:
+                                        print("\nYou can't transfer money to the same account!\n")
+                                        continue
+                                    else:
+                                        bank.transfer_funds(session_id)
                                 else:
-                                    bank.transfer_funds(session_id)
+                                    print('\nSuch a card does not exist\n')
+                                    continue
                             else:
                                 print('\nProbably you made a mistake in the card number. Please try again!\n')
-                                continue
+
 
 
                         case '4':  # close account
