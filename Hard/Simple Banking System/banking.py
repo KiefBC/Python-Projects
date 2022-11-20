@@ -1,347 +1,209 @@
 import random
 import sqlite3
 
-class BankMachine:
-    """
-    Just a simple Bank Machine program made in Python.
-    Self-explanatory. User can Create an account, login to an account or View an account
-    Everything is saved to a database with: Unique ID, Card Number, PIN, and Balance
-    """
 
-    def __init__(self):
-        self.iin = '400000'
-        self.main_menu = "1. Create an account\n2. Log into account\n0. Exit"
-        self.account_menu = '1. Balance\n2. Add income\n3. Do transfer\n4. Close account\n5. Log out\n0. Exit'
+class Card:
+    def __init__(self, number, password):
+        self.number = number
+        self.password = password
+        self.balance = 0
 
-    # THIS WORKS AND CREATES OUR DB IF NOT EXISTS
-    def initialize_db(self):
-        """
-        This will initialize our DB for use with the Banking System
-        else it wont if it exists
-        :return:
-        """
-        conn = sqlite3.connect('card.s3db')
-        c = conn.cursor()
-        create = c.execute("""CREATE TABLE IF NOT EXISTS card (
-                                            id INTEGER,
-                                            number TEXT,
-                                            pin TEXT,
-                                            balance INTEGER DEFAULT 0
-                                            );""")
-        conn.commit()
-        conn.close()
+
+def connect_db(db_file):
+    return sqlite3.connect(db_file)
+
+
+def create_db():
+    cursor = connection.cursor()
+    cursor.execute('CREATE TABLE IF NOT EXISTS card('
+                   'id INTEGER primary key AUTOINCREMENT,'
+                   'number TEXT,'
+                   'pin TEXT,'
+                   'balance INTEGER DEFAULT 0'
+                   ')')
+    connection.commit()
+
+
+def print_menu():
+    if not logged_in:
+        print('1. Create an account')
+        print('2. Log into account')
+        print('0. Exit')
+        return int(input())
+    else:
+        print('1. Balance')
+        print('2. Add income')
+        print('3. DO transfer')
+        print('4. Close account')
+        print('5. Log out')
+        print('0. Exit')
+        return int(input())
+
+
+def get_checksum(_card):
+    numbers = list(str(_card.number))
+    numbers = [eval(i) for i in numbers]
+    # Multiply odd digits by 2
+    counter = 0
+    for _ in numbers:
+        if counter % 2 == 0:
+            numbers[counter] *= 2
+        counter += 1
+    counter = 0
+    # Subtract 9 from digits over 9
+    for number in numbers:
+        if number > 9:
+            numbers[counter] -= 9
+        counter += 1
+    # Add all numbers
+    result = 0
+    for number in numbers:
+        result += number
+
+    if result % 10 == 0:
+        _card.number = int(str(_card.number) + '0')
+        return True
+    else:
+        _card.number = int(str(_card.number) + str(10 - (result % 10)))
+        return False
+
+
+def add_card(card):
+    cursor = connection.cursor()
+    cursor.execute("INSERT INTO CARD(number, pin) "
+                   "VALUES ('" + str(card.number) + "', '" + str(card.password) + "')")
+    connection.commit()
+
+
+def create_account():
+    card = Card(int('400000' + str(random.randint(100000000, 999999999))),
+                random.randint(1000, 9999))
+    get_checksum(card)
+    print('Your card has been created')
+    print('Your card number:')
+    print(card.number)
+    print('Your card PIN:')
+    print(card.password)
+    add_card(card)
+    return card
+
+
+def log_in():
+    global current_card
+    print('Enter your card number:')
+    input_number = int(input())
+    print('Enter your PIN:')
+    input_pin = int(input())
+    select = 'SELECT number, pin, balance from CARD where number =? and pin = ?'
+    cursor = connection.cursor()
+    cursor.execute(select, (str(input_number), str(input_pin)))
+    card = cursor.fetchone()
+    if card is not None:
+        print('You have successfully logged in!')
+        current_card = Card(card[0], card[1])
+        current_card.balance = card[2]
+        return True
+    else:
+        print('Wrong card number or PIN')
+        return False
+
+
+logged_in = False
+current_card = None
+connection = connect_db('card.s3db')
+create_db()
+
+
+def add_income():
+    global current_card
+    print('Enter income:')
+    income = int(input())
+    current_card.balance += income
+    insert = "update card set balance = balance + ? where number= ?"
+    cursor = connection.cursor()
+    cursor.execute(insert, (income, str(current_card.number)))
+    connection.commit()
+    print('Income was added!')
+
+
+def close_account():
+    global current_card
+    delete = "delete from card where number = ?"
+    cursor = connection.cursor()
+    cursor.execute(delete, (current_card.number,))
+    connection.commit()
+    print('The account has been closed!')
+
+
+def check_receiver(receiver):
+    select = "select number from card where number = ?"
+    cursor = connection.cursor()
+    cursor.execute(select, (receiver,))
+    if cursor.fetchone() is not None:
+        return True
+    else:
+        return False
+
+
+def do_transfer():
+    print('Transfer\n Enter card number:')
+    receiver = input()
+    temp = Card(receiver, '9609')
+    if not get_checksum(temp):
+        print('Probably you made a mistake in the card number.\n Please try again!')
         return
-
-    # STEP 2 - EVERYTHING IS WORKING AS INTENDED
-    def card_creation(self):
-        """
-        We create our user a new Card Number and PIN
-        We utilize the Luhn Algorithm and add to the DB
-        We hope the Human Centipede keep it safe.
-        :return:
-        """
-        # Connect to DB
-        conn = sqlite3.connect('card.s3db')
-        c = conn.cursor()
-
-        # Create Unique Identifier
-        unique_id = ''.join([str(random.randint(0, 9)) for _ in range(9)])
-
-        c.execute("INSERT INTO card (id) VALUES (?)", [unique_id])
-        conn.commit()
-
-        # create Credit Card number
-        card_number = f'{self.iin}{unique_id}'
-
-        # Create and append the Luhn Algo Checksum
-        for checksum in range(10):
-            if self.luhn_algo(card_number + str(checksum)):
-                card_number = card_number + str(checksum)
-                break
-
-        # c.execute("INSERT INTO card (number) VALUES (?, ?) WHERE id=?", [card_number, unique_id])
-        c.execute("UPDATE card SET number=? WHERE id=?", [card_number, unique_id])
-        conn.commit()
-
-        # Create our PIN
-        pin_creation = ''.join([str(random.randint(0, 9)) for _ in range(4)])
-        pin_number = f'{pin_creation}'
-
-        # c.execute("INSERT INTO card (pin) VALUES (?, ?)  WHERE id=? ", [pin_number, unique_id])
-        c.execute("UPDATE card SET pin=? WHERE id=?", [pin_number, unique_id])
-        conn.commit()
-
-        c.execute("SELECT * FROM card")
-
-        # Print out our Confirmation of addition
-        items = c.fetchall()
-
-        print("Your card has been created")
-        print(f'Your card number:\n{card_number}')
-        print(f'Your card PIN:\n{pin_number}\n')
-
-        # Close DB Connection
-        conn.close()
-
-        return f'{unique_id}'
-
-    # NOW COMPLETELY ADDS THE BALANCE TO THE CURRENT USER!
-    def add_balance(self, session_id):
-        """
-        This will allow the user to deposit funds into their account
-        :param card_number:
-        :return:
-        """
-        # Connect to DB
-        conn = sqlite3.connect('card.s3db')
-        c = conn.cursor()
-
-        c.execute("SELECT * FROM card WHERE id=?", [session_id])
-        items = c.fetchone()
-
-        add_amount = int(input('Enter income:\n> '))
-        new_balance = items[3] + add_amount
-
-        c.execute("UPDATE card SET balance=? WHERE id=?", [new_balance, session_id])
-        conn.commit()
-        conn.close()
-        print('\nIncome was added!\n')
+    elif not check_receiver(receiver):
+        print('Such a card does not exist.')
         return
-
-    # OPTION 3 - DONE!
-    def transfer_funds(self, session_id):
-        """
-        This will allow the user to transfer funds to another account
-        :param trans_card:
-        :param unique_id:
-        :return:
-        """
-
-        # Connect to DB
-        conn = sqlite3.connect('card.s3db')
-        c = conn.cursor()
-
-        trans_money = int(input('Enter how much money you want to transfer:\n> '))
-        c.execute("SELECT balance FROM card WHERE id=?", [session_id])
-        items = c.fetchone()
-        if trans_money > items[0]:
+    else:
+        print('How much money you want to transfer:')
+        money = int(input())
+        if current_card.balance < money:
             print('Not enough money!')
-            # End DB Connection
-            conn.close()
             return
-        else:
-            new_balance = items[0] - trans_money
-            c.execute("UPDATE card SET balance=? WHERE id=?", [new_balance, session_id])
+        cursor = connection.cursor()
+        cursor.execute('begin transaction')
+        try:
+            cursor.execute('update card set balance = balance - ? where number=?',
+                           (money, current_card.number))
+            cursor.execute('update card set balance = balance + ? where number = ?',
+                           (money, receiver))
+            cursor.execute('commit')
+            connection.commit()
+            current_card.balance -= money
             print('Success!')
-
-            # End DB Connection
-            conn.commit()
-            conn.close()
-
-            return
-
-    # IS NOW WORKING FULLY
-    def close_account(self, session_id):
-        """
-        This will allow the user to delete their account from our database
-        :param session_id:
-        :return:
-        """
-        # Connect to DB
-        conn = sqlite3.connect('card.s3db')
-        c = conn.cursor()
-
-        c.execute('DELETE FROM card WHERE id=?', [session_id])
-        conn.commit()
-        conn.close()
-        return
-
-    # GET BALANCE DOES WHAT ITS SUPPOSED TOO
-    def get_balance(self):
-        # Connect to DB
-        conn = sqlite3.connect('card.s3db')
-        c = conn.cursor()
-
-        c.execute("SELECT balance FROM card")
-        items = c.fetchall()
-        balance = items[-1]
-
-        # End DB Connection
-        conn.commit()
-        conn.close()
-        return f'\nBalance: {balance[0]}\n'
-
-    # THE ALGORITHM WORKS FULLY
-    def luhn_algo(self, card_number):
-        """
-        The Luhn algorithm will detect any single-digit error, as well as almost all transpositions of adjacent
-        digits. It will not, however, detect transposition of the two-digit sequence 09 to 90 (or vice versa). It
-        will detect most of the possible twin errors (it will not detect 22 ↔ 55, 33 ↔ 66 or 44 ↔ 77) :param
-        card_number: :return:
-        """
-        card_number = [int(num) for num in card_number]
-        for i in range(len(card_number)):
-            if i % 2 == 0:
-                card_number[i] = card_number[i] * 2
-        for i in range(len(card_number)):
-            if card_number[i] > 9:
-                card_number[i] -= 9
-        if sum(card_number) % 10 == 0:
-            return True
-        else:
-            return False
-
-    # VERIFYING - NOW WORKS FLAWLESSLY
-    def check_creds(self, session_id=None):
-        """
-        This is the function for checking and verifying the credentials
-        we received from the user as well as utilizing the Luhn Algo
-        before accepting a PIN in case of Card Number entry error
-        :return:
-        """
-        # Connect to DB
-        conn = sqlite3.connect('card.s3db')
-        c = conn.cursor()
-
-        print("")
-        card_input = input('Enter your card number:\n> ')
-        pin_input = input('Enter your PIN:\n> ')
-
-        if self.luhn_algo(card_input):
-            c.execute("SELECT * FROM card WHERE id=?", [session_id[0]])
-            items = c.fetchall()
-            if card_input in items[0][1] and pin_input in items[0][2]:
-                print('\nYou have successfully logged in!\n')
-
-                # End DB Connection
-                conn.close()
-
-                return True
-            else:
-                print('Wrong card number or PIN!\n')
-
-                # End DB Connection
-                conn.close()
-
-                return False
-        else:
-            print('Wrong card number or PIN!\n')
-
-            # End DB Connection
-            conn.close()
-
-            return False
-
-    # THIS SUCCESSFULLY DROPS THE TABLE EVERY TIME WE RUN THE SCRIPT
-    def drop_table(self):
-        # Connect to DB
-        conn = sqlite3.connect('card.s3db')
-        c = conn.cursor()
-
-        c.execute("DROP TABLE IF EXISTS card")
-        conn.commit()
-
-        # Confirm
-        # c.execute("SELECT * FROM card")
-        # items = c.fetchall()
-        # print(f'\nThis is our confirmation of the table being dropped: {[item for item in items]}\n')
-
-        # Close DB Connection
-        conn.commit()
-        conn.close()
-        return
+        except sqlite3.Error:
+            cursor.execute('rollback')
 
 
-bank = BankMachine()
-bank.drop_table()
-bank.initialize_db()
-x = True
-
-
-while x:
-    # Holds all current session_id until STOP
-    session_ids = []
-    # Connect to DB
-    conn = sqlite3.connect('card.s3db')
-    c = conn.cursor()
-
-    user_input = input("1. Create an account\n2. Log into account\n0. Exit\n> ")
-    match user_input:
-        case '1':  # CREATE ACCOUNT
-            print("")
-            # session_id = (bank.card_creation(),)
-            # session_ids.append(unique_id)
-            session_id = (bank.card_creation(),)
-            # session_id = session_ids[-1]
-        case '2':  # LOG INTO ACCOUNT
-            if bank.check_creds(session_id):
-                while True:
-                    account_input = input(
-                        '1. Balance\n2. Add income\n3. Do transfer\n4. Close account\n5. Log out\n0. Exit\n> ')
-
-
-                    match account_input:
-
-                        case '1':  # balance
-                            print(bank.get_balance())
-                            continue
-
-
-                        case '2':  # add income
-                            bank.add_balance(session_id)
-
-
-                        case '3':  # TRANSFERING FUNDS CROSS-ACCOUNT
-
-                            trans_card = input('Enter card number:\n> ')
-                            if_exists = c.execute("SELECT EXISTS(SELECT number FROM card WHERE number=?)", (trans_card,))
-                            fetched = if_exists.fetchone()[0]
-
-                            if bank.luhn_algo(trans_card):
-                                if fetched == 1:
-                                    c.execute("SELECT number FROM card")
-                                    items = c.fetchall()
-                                    if trans_card == items[0][0]:
-                                        print("\nYou can't transfer money to the same account!\n")
-                                        continue
-                                    else:
-                                        bank.transfer_funds(session_id)
-                                else:
-                                    print('\nSuch a card does not exist\n')
-                                    continue
-                            else:
-                                print('\nProbably you made a mistake in the card number. Please try again!\n')
-
-
-
-                        case '4':  # close account
-                            conn.close()
-                            bank.close_account(session_id)
-
-
-                        case '5':  # log out
-                            conn.close()
-                            print('You have successfully logged out!')
-                            break
-
-
-                        case '0':
-                            print('Bye!')
-                            x = False
-                            break
-
-
-                        case _:
-                            conn.close()
-                            print('\nPlease select from available options.\n')
-                            continue
-
-
-        case '0':
-            conn.close()
-            print('Bye!')
-            break
-        case _:
-            conn.close()
-            print('\nPlease select from available options.\n')
+while True:
+    choice = print_menu()
+    if choice == 1:
+        create_account()
+    elif choice == 2:
+        if not log_in():
             continue
+        else:
+            logged_in = True
+            while True:
+                choice = print_menu()
+                if choice == 1:
+                    print(f'Balance: {current_card.balance}')
+                elif choice == 2:
+                    add_income()
+                elif choice == 3:
+                    do_transfer()
+                elif choice == 4:
+                    close_account()
+                elif choice == 5:
+                    logged_in = False
+                    print('You have successfully logged out!')
+                    break
+                elif choice == 0:
+                    print('Bye!')
+                    connection.close()
+                    exit()
+    elif choice == 0:
+        print('Bye!')
+        connection.close()
+        exit()
