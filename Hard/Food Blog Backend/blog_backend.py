@@ -16,8 +16,7 @@ class FoodBlogDB:
         """
 
         # TURNING ON PK AND FK
-        self.c.execute("PRAGMA foreign_keys = ON;")
-        self.conn.commit()
+        self.execute_query("PRAGMA foreign_keys = ON;")
 
         # OUR DATA
         with open("moms_recipe.json") as recipe:
@@ -85,7 +84,7 @@ class FoodBlogDB:
                 recipe_id = self.execute_query(insert_query).lastrowid
                 recipe_served = input('1) breakfast  2) brunch  3) lunch  4) supper\nWhen the dish can be served: ').split()
                 for time in recipe_served:
-                    insert_query= f'INSERT INTO serve (recipe_id, meal_id) VALUES ("{recipe_id}", "{time}")'
+                    insert_query = f'INSERT INTO serve (recipe_id, meal_id) VALUES ("{recipe_id}", "{time}")'
                     self.execute_query(insert_query)
                 # continue
 
