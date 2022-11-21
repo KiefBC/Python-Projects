@@ -57,10 +57,16 @@ class FoodBlogDB:
             for k, v in enumerate(the_recipe.get(item)):
                 # we use {item}[:-1] to remove the "s"  off the table names (notice meals and meal_id)
                 # INSERT INTO meals (meal_name) VALUES (1, "breakfast") is an example of below
-                self.c.execute(f"INSERT OR IGNORE INTO {item} ({item[:-1]}_id, {item[:-1]}_name) values({k}, '{v}');")
-                self.conn.commit()
+                insert_query = f"INSERT OR IGNORE INTO {item} ({item[:-1]}_id, {item[:-1]}_name) values({k}, '{v}');"
+                self.execute_query(insert_query)
 
     def execute_query(self, command):
+        """
+        So much easier just being able to call a function instead of constantly
+        writing our execute commands. I should factor in executescript as well.
+        :param command:
+        :return:
+        """
         conn = sqlite3.connect('food_blog.db')
         c = conn.cursor()
         result = c.execute(command)
@@ -73,11 +79,10 @@ class FoodBlogDB:
         :return:
         """
         while True:
-            print('Pass the empty recipe name to exit.\n')
+            print('\nPass the empty recipe name to exit.\n')
             recipe_name = input('Recipe name: ')
             if recipe_name == '':
                 break
-
             else:
                 recipe_description = input('Recipe description: ')
                 insert_query = f"INSERT OR IGNORE INTO recipes (recipe_name, recipe_description) VALUES ('{recipe_name}', '{recipe_description}')"
@@ -86,7 +91,6 @@ class FoodBlogDB:
                 for time in recipe_served:
                     insert_query = f'INSERT INTO serve (recipe_id, meal_id) VALUES ("{recipe_id}", "{time}")'
                     self.execute_query(insert_query)
-                # continue
-
+                continue
         # TERMINATION
         self.conn.close()
