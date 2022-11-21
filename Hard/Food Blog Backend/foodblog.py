@@ -38,4 +38,5 @@ class FoodBlog:
         self.conn.close()
 
 
-fb = FoodBlog()
+if __name__ == '__main__':
+    fb = FoodBlog()
