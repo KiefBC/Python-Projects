@@ -1,4 +1,5 @@
 import sqlite3
+import json
 
 
 class FoodBlog:
@@ -9,10 +10,13 @@ class FoodBlog:
         self.initialize_db()
 
     def initialize_db(self):
+        """
+        HAVE YOU EVER WONDERED HOW BUTTERFLIES WORK?
+        :return:
+        """
         # OUR DATA
-        data = {"meals": ("breakfast", "brunch", "lunch", "supper"),
-                "ingredients": ("milk", "cacao", "strawberry", "blueberry", "blackberry", "sugar"),
-                "measures": ("ml", "g", "l", "cup", "tbsp", "tsp", "dsp", "")}
+        with open("moms_recipe.json") as recipe:
+            the_recipe = json.load(recipe)
 
         # CREATE OUR TABLES
         self.c.executescript("""
@@ -22,13 +26,14 @@ class FoodBlog:
         self.conn.commit()
 
         # ADD DATA TO OUR DB
-        for i in data.keys():
-            # for loop grabs table names via i for the SELECT statement and the data[index]
-            # x += itself to create an index
-            self.c.executemany(f"INSERT OR IGNORE INTO {i} VALUES (?, ?)", [x for x in enumerate(data[i])])
-            self.conn.commit()
+        for item in the_recipe:
+            for k, v in enumerate(the_recipe.get(item)):
+                # we use {item}[:-1] to remove the "s"  off the table names (notice meals and meal_id)
+                # INSERT INTO meals (meal_name) VALUES (1, "breakfast") is an example of below
+                self.c.execute(f"INSERT OR IGNORE INTO {item} ({item[:-1]}_id, {item[:-1]}_name) values({k}, '{v}');")
+        self.conn.commit()
 
-        # Terminate our DB Connection
+        # TERMINATION
         self.conn.commit()
         self.conn.close()
 
