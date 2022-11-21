@@ -9,7 +9,6 @@ Have the blog itself call the backend.
 
 def main():
     fb = FoodBlogDB()
-    fb.initialize_db()
     fb.pop_table()
 
 
