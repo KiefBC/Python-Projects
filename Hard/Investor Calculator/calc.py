@@ -1,3 +1,4 @@
+# Will we need these forever? Who knows
 MAIN_MENU = "MAIN MENU\n0 Exit\n1 CRUD operations\n2 Show top ten companies by criteria"
 CRUD_MENU = "CRUD MENU\n0 Back\n1 Create a company\n2 Read a company\n3 Update a company\n4 Delete a company\n5 List " \
             "all companies"
