@@ -13,7 +13,6 @@ class InvestCalc:
 
 
 def main():
-    ic = InvestCalc()
     while True:
         menu_input = input(f'{MAIN_MENU}\nEnter an option: ')
         match menu_input:

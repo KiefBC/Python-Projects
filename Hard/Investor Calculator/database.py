@@ -12,7 +12,7 @@ Base = declarative_base()
 
 
 class CompanyDatabase(Base):
-    __tablename__ = 'Companies'
+    __tablename__ = 'companies'
 
     ticker = Column(String, primary_key=True)
     name = Column(String)
@@ -20,7 +20,7 @@ class CompanyDatabase(Base):
 
 
 class FinancialDatabase(Base):
-    __tablename__ = 'Financials'
+    __tablename__ = 'financial'
 
     ticker = Column(String, primary_key=True)
     ebitda = Column(Float)
@@ -39,16 +39,16 @@ def main():
 
     with open("companies.csv", newline='') as companies:
         file_reader = csv.reader(companies, delimiter=",")  # Create a reader object
+        next(file_reader)
         for line in file_reader:  # Read each line
             ticker = line[0]
             name = line[1]
             sector = line[2]
             add_company = CompanyDatabase(ticker=ticker, name=name, sector=sector)
             session.add(add_company)
+            session.commit()
 
         with open("financial.csv", newline='') as financials:
-            columns = ['Ticker', 'EBITDA', 'Sales', 'Net Profit', 'Market Price', 'Net Debt',
-                       'Assets', 'Equity', 'Cash Equivalents', 'Liabilities']
             file_reader = csv.DictReader(financials, delimiter=",")
             for line in file_reader:
                 for v in line.items():
@@ -69,6 +69,7 @@ def main():
                                                   equity=equity, cash_equivalents=cash_equivalents,
                                                   liabilities=liabilities)
                 session.add(add_financial)
+                session.commit()
 
     session.commit()
     print('Database created successfully!')
