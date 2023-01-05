@@ -1,14 +1,28 @@
 import csv
+from os.path import exists
 
-from sqlalchemy import create_engine, Float
+from sqlalchemy import Column, String, create_engine, Float
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import sessionmaker
 
 engine = create_engine('sqlite:///investor.db', echo=False)
 Session = sessionmaker(bind=engine)
 session = Session()
 Base = declarative_base()
+
+
+def add_entry(table, data) -> None:
+    """
+    Add a new entry to the database
+    """
+    for byte in data:
+        for k, v in byte.items():
+            if v == '':
+                byte[k] = None
+
+    for byte in data:
+        session.add(table(**byte))
+        session.commit()
 
 
 class CompanyDatabase(Base):
@@ -34,46 +48,25 @@ class FinancialDatabase(Base):
     liabilities = Column(Float)
 
 
-def main():
+def main() -> None:
+    # Create the database
+    db_name = 'investor.db'
+    if exists(db_name):
+        print('Database already exists!')
+        return  # Database is already made
+
     Base.metadata.create_all(engine)
 
-    with open("companies.csv", newline='') as companies:
-        file_reader = csv.reader(companies, delimiter=",")  # Create a reader object
-        next(file_reader)
-        for line in file_reader:  # Read each line
-            ticker = line[0]
-            name = line[1]
-            sector = line[2]
-            add_company = CompanyDatabase(ticker=ticker, name=name, sector=sector)
-            session.add(add_company)
-            session.commit()
+    with open('companies.csv', 'r') as company_data, open('financial.csv', 'r') as fin_data:
+        companies_content = list(csv.DictReader(company_data))
+        financial_content = list(csv.DictReader(fin_data))
 
-        with open("financial.csv", newline='') as financials:
-            file_reader = csv.DictReader(financials, delimiter=",")
-            for line in file_reader:
-                for v in line.items():
-                    if v[1] == '':
-                        line[v[0]] = None
-                ticker = line['ticker']
-                ebitda = line['ebitda']
-                sales = line['sales']
-                net_profit = line['net_profit']
-                market_price = line['market_price']
-                net_debt = line['net_debt']
-                assets = line['assets']
-                equity = line['equity']
-                cash_equivalents = line['cash_equivalents']
-                liabilities = line['liabilities']
-                add_financial = FinancialDatabase(ticker=ticker, ebitda=ebitda, sales=sales, net_profit=net_profit,
-                                                  market_price=market_price, net_debt=net_debt, assets=assets,
-                                                  equity=equity, cash_equivalents=cash_equivalents,
-                                                  liabilities=liabilities)
-                session.add(add_financial)
-                session.commit()
-
+    # Add the data to the database
+    add_entry(CompanyDatabase, companies_content)
+    add_entry(FinancialDatabase, financial_content)
     session.commit()
-    print('Database created successfully!')
 
 
 if __name__ == '__main__':
     main()
+    print('\nDatabase created successfully!\n')
