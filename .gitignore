@@ -4,3 +4,11 @@
 /Modules/
 /Tough Python Questions/
 /.fleet/
+*db
+*.idea/
+*.png
+cleaned.csv
+*\[CHECKED\].CSV
+.vscode
+*.svg
+
